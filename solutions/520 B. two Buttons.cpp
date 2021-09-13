@@ -1,63 +1,68 @@
 #include <bits/stdc++.h>
+#define pb push_back
+#define ll long long
+#define INF (ll)(1e18)
 
 using namespace std;
-const int N = 1e3+7 ;
 
-bool vis[N] ;
-vector<vector<int>> languageEmployees;
-vector<vector<int>> graph;
+const int N = 1e5+7;
+int n,m;
+vector<int> graph[N];
+bool visited[N];
+int dist[N];
 
-int n,m,nbLangages,l;
+void augmentedBfs (int src, int dest){
+	queue<int> q;
+    q.push(src);
+    visited[src]=true;
+    dist[src]=0;
 
-void dfs(int pos){
-	vis[pos] = true ;
-	for(auto child: graph[parent]){
-		if(!vis[child])
-            dfs(child);
+	while (!q.empty()){
+        int parent = q.front();
+        q.pop();
+        for (auto child:graph[parent])
+        {
+             if (!visited[child])
+             {
+                 visited[child]=true;
+                 q.push(child);
+                 dist[child]=1+dist[parent];
+             }
+        }
 	}
-
-	return ;
 }
 
 int main()
 {
-
 cin>>n>>m;
-
-languageEmployees.resize(m);
-graph.resize(n);
-memset(vis,false,sizeof vis);
-
-for (int i=0 ; i<n ; i++)
+int mMax;
+if (n==m)
 {
-    cin>>nbLangages;
+   cout<<0;
+   return 0;
+}
+else if (n>m)
+{
+   cout<<n-m;
+   return 0;
+}
+else
+    mMax = (m-1)*2;
 
-    for (int j=0 ; j<nbLangages ; j++)
-     {
-        cin>>l;
-        languageEmployees[l-1].push_back(i);
-     }
+for (int i=1 ; i<=mMax ; i++)
+{
+    if (i-1>0) graph[i].pb(i-1);
+    if (2*i<=mMax) graph[i].pb(2*i);
 }
 
-for (int i=0 ; i<n ; i++)
-{
-    int nb = languageEmployees[i].size();
-    for (int j=0 ; j < nb-1 ; j++)
-    {
-        graph[languageEmployees[i][j].push_back(languageEmployees[i][j+1]);
-    }
-}
+for (int i=0 ; i<=N ; i++)
+    dist[i]=INF;
 
-int disconnectedGraphs=0;
-for ( int i=0 ; i<n ; i++)
-{
-    if (!vis[i])
-    {
-        dfs(i);
-        disconnectedGraphs++;
-    }
-}
+memset(visited, 0, sizeof visited);
 
-cout<<disconnectedGraphs-1;
+augmentedBfs(n,m);
+
+cout<<dist[m];
+
     return 0;
 }
